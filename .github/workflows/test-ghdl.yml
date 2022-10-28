@@ -1,5 +1,6 @@
 name: Test UVVM with GHDL
 
+# TODO add events (push, pull_request, release) and/or schedule as required
 on: [workflow_dispatch]
 
 jobs:

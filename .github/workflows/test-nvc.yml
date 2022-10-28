@@ -28,6 +28,10 @@ jobs:
       - name: Test UVVM with NVC
         run: |
           mkdir test && cd test
+          pwd
+          ls ..
+          ls ../..
+          exit 1
           sh ../script/compile_all.sh nvc
           sh ../bitvis_irqc/script/compile_all_and_simulate.sh nvc
           if ! grep -Fxq "Simulation SUCCESS" nvc/_Log.txt ; then

@@ -32,7 +32,9 @@ jobs:
           mkdir test && cd test
           sh ../script/compile_all.sh nvc
           sh ../bitvis_irqc/script/compile_all_and_simulate.sh nvc
-          if grep -Rq "Simulation SUCCESS" nvc/_Log.txt ; then
+          outcome=$(grep -Rq "Simulation SUCCESS" ghdl/_Log.txt)
+          echo "outcome=$outcome"
+          if [ "$outcome" != "0" ]; then
             exit 1
           fi
           sh ../bitvis_uart/script/compile_all_and_simulate.sh nvc

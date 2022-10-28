@@ -1,0 +1,34 @@
+name: Test UVVM with GHDL
+
+on: [workflow_dispatch]
+
+jobs:
+  test-ghdl:
+    name: Test UVVM with GHDL
+    runs-on: windows-2019
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: mingw32
+          update: true
+      - name: Install GHDL
+        run: |
+          pacman -S --noconfirm mingw-w64-i686-ghdl-mcode
+      - name: Test UVVM with NVC
+        run: |
+          mkdir test && cd test
+          sh ../script/compile_all.sh nvc
+          sh ../bitvis_irqc/script/compile_all_and_simulate.sh nvc
+          if ! grep -Fxq "Simulation SUCCESS" nvc/_Log.txt ; then
+            exit 1
+          fi
+          sh ../bitvis_uart/script/compile_all_and_simulate.sh nvc
+          if ! grep -Fxq "Simulation SUCCESS" nvc/_Log.txt ; then
+            exit 1
+          fi

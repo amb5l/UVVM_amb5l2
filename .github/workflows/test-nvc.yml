@@ -1,0 +1,39 @@
+name: Test UVVM with NVC
+
+# TODO add events (push, pull_request, release) and/or schedule as required
+on: [workflow_dispatch]
+
+jobs:
+  test-nvc:
+    name: Test UVVM with NVC
+    runs-on: windows-2019
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: mingw64
+          update: true
+      - name: Install NVC
+        run: |
+          : # temporary
+          wget https://www.nickg.me.uk/files/mingw-w64-x86_64-nvc-1.7.0.r209.g4ef679f1-1-any.pkg.tar.zst
+          pacman -U --noconfirm *.zst
+          : # TODO install from offical MSYS2 package when available
+          : # pacman -S --noconfirm mingw-w64-x86_64-nvc
+      - name: Test UVVM with NVC
+        run: |
+          mkdir test && cd test
+          sh ../script/compile_all.sh nvc
+          sh ../bitvis_irqc/script/compile_all_and_simulate.sh nvc
+          if ! grep -Fxq "Simulation SUCCESS" nvc/_Log.txt ; then
+            exit 1
+          fi
+          sh ../bitvis_uart/script/compile_all_and_simulate.sh nvc
+          if ! grep -Fxq "Simulation SUCCESS" nvc/_Log.txt ; then
+            exit 1
+          fi
